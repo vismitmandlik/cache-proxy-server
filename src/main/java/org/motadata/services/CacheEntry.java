@@ -28,21 +28,6 @@ public class CacheEntry
         return value;
     }
 
-    public long getTimestamp()
-    {
-        return timestamp;
-    }
-
-    public String getSource()
-    {
-        return source;
-    }
-
-    public String getVersion()
-    {
-        return version;
-    }
-
     public boolean isExpired(long ttl)
     {
         return (System.currentTimeMillis() - timestamp) >= ttl;
