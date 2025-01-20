@@ -85,6 +85,7 @@ public class CacheService extends CacheEntry
         {
             CACHE.put(key, new CacheEntry(value, System.currentTimeMillis(), source, version));
         }
+
         finally
         {
             LOCK.writeLock().unlock();
@@ -93,6 +94,9 @@ public class CacheService extends CacheEntry
 
     public static void putCache(String key, JsonObject value)
     {
-        putCache(key, value, null, null);
+      /* put source if we have multiple cache sources like frontend, backend microservices
+         put version if we want to implement version based cache invalidation after system update */
+
+        putCache(key, value, null, null); // null as not required in this example project
     }
 }
