@@ -8,19 +8,12 @@ public class CacheEntry
 
     private final long timestamp;
 
-    private final String source;
-
-    private final String version;
-
-    public CacheEntry(JsonObject value, long timestamp, String source, String version)
+    public CacheEntry(JsonObject value, long timestamp)
     {
         this.value = value;
 
         this.timestamp = timestamp;
 
-        this.source = source;
-
-        this.version = version;
     }
 
     public JsonObject getValue()

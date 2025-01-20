@@ -51,7 +51,7 @@ public class ProxyHandler
             LOGGER.info("Proxying request to origin and caching response for {}", cacheKey);
 
             // Respond to the client with the cached data
-            context.response().putHeader("X-Cache", "MISS").end(responseJson.encodePrettily());
+            context.response().putHeader(Constants.X_CACHE, "MISS").end(responseJson.encodePrettily());
         }
         else
         {

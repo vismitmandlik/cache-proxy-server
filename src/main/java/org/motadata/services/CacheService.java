@@ -31,9 +31,9 @@ public class CacheService extends CacheEntry
 
     private static final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
 
-    public CacheService(JsonObject value, long timestamp, String source, String version)
+    public CacheService(JsonObject value, long timestamp)
     {
-        super(value, timestamp, source, version);
+        super(value, timestamp);
     }
 
     // Use inherited CacheEntry methods here if needed
@@ -77,26 +77,18 @@ public class CacheService extends CacheEntry
         }
     }
 
-    public static void putCache(String key, JsonObject value, String source, String version)
+    public static void putCache(String key, JsonObject value)
     {
         LOCK.writeLock().lock();
 
         try
         {
-            CACHE.put(key, new CacheEntry(value, System.currentTimeMillis(), source, version));
+            CACHE.put(key, new CacheEntry(value, System.currentTimeMillis()));
         }
 
         finally
         {
             LOCK.writeLock().unlock();
         }
-    }
-
-    public static void putCache(String key, JsonObject value)
-    {
-      /* put source if we have multiple cache sources like frontend, backend microservices
-         put version if we want to implement version based cache invalidation after system update */
-
-        putCache(key, value, null, null); // null as not required in this example project
     }
 }

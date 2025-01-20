@@ -21,9 +21,9 @@ public class Server extends AbstractVerticle
     private final String ORIGIN;
 
     @Override
-    public void start(Promise<Void> Promise) throws Exception
+    public void start(Promise<Void> promise) throws Exception
     {
-        super.start(Promise);
+        super.start(promise);
 
         var server = vertx.createHttpServer();
 
@@ -57,11 +57,15 @@ public class Server extends AbstractVerticle
             if (response.succeeded())
             {
                 logger.info("Server started on port {}", PORT);
+
+                promise.complete();
             }
 
             else
             {
                 logger.error("Failed to start server", response.cause());
+
+                promise.fail(response.cause());
             }
         });
     }
