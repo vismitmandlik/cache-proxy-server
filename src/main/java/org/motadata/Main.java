@@ -21,7 +21,7 @@ public class Main
 
     public static String ORIGIN = "";
 
-    public static JsonObject config;
+    public static JsonObject CONFIG;
 
     public static void main(String[] args)
     {
@@ -40,7 +40,7 @@ public class Main
                 return;
             }
 
-            config = result.result();
+            CONFIG = result.result();
 
             if (args.length < 4)
             {

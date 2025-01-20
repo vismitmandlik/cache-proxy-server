@@ -5,6 +5,7 @@ import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.RoutingContext;
+import org.motadata.Main;
 import org.motadata.constants.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,14 +14,19 @@ public class ProxyHandler
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProxyHandler.class);
 
+    public static final String MISS = "MISS";
+    public static final String DEFAULT_WEB_CLIENT_PORT = "defaultWebClientPort";
+    public static final String WEBCLIENT_CONNECTION_TIMEOUT = "webClientConnectionTimeout";
+    public static final String DEFAULT_HOST = "defaultHost";
+
     public static void handleRequest(RoutingContext context, Vertx vertx, String origin, String cacheKey)
     {
         LOGGER.info("Sending proxy request to {}", origin + context.request().uri());
 
         WebClient client = WebClient.create(vertx, new WebClientOptions()
-                .setDefaultHost("dummyjson.com")
-                .setDefaultPort(80)
-                .setConnectTimeout(10000));
+                .setDefaultHost(Main.CONFIG.getString(DEFAULT_HOST))
+                .setDefaultPort(Main.CONFIG.getInteger(DEFAULT_WEB_CLIENT_PORT))
+                .setConnectTimeout(Main.CONFIG.getInteger(WEBCLIENT_CONNECTION_TIMEOUT)));
 
         client.get(origin + context.request().uri()).send(result ->
                 {
@@ -51,7 +57,7 @@ public class ProxyHandler
             LOGGER.info("Proxying request to origin and caching response for {}", cacheKey);
 
             // Respond to the client with the cached data
-            context.response().putHeader(Constants.X_CACHE, "MISS").end(responseJson.encodePrettily());
+            context.response().putHeader(Constants.X_CACHE, MISS).end(responseJson.encodePrettily());
         }
         else
         {

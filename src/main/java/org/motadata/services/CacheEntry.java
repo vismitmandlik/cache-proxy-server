@@ -13,7 +13,6 @@ public class CacheEntry
         this.value = value;
 
         this.timestamp = timestamp;
-
     }
 
     public JsonObject getValue()

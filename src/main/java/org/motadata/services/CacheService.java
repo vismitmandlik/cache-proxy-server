@@ -25,7 +25,7 @@ public class CacheService extends CacheEntry
         @Override
         protected boolean removeEldestEntry(Map.Entry<String, CacheEntry> eldest)
         {
-            return size() > Main.config.getInteger(Constants.MAX_ENTRIES) || eldest.getValue().isExpired(Main.config.getLong(Constants.TTL));
+            return size() > Main.CONFIG.getInteger(Constants.MAX_ENTRIES) || eldest.getValue().isExpired(Main.CONFIG.getLong(Constants.TTL));
         }
     };
 
@@ -45,7 +45,7 @@ public class CacheService extends CacheEntry
         {
             CacheEntry entry = CACHE.get(key);
 
-            return entry != null && !entry.isExpired(Main.config.getLong(Constants.TTL));
+            return entry != null && !entry.isExpired(Main.CONFIG.getLong(Constants.TTL));
         }
 
         catch (Exception exception)
@@ -69,7 +69,7 @@ public class CacheService extends CacheEntry
         {
             CacheEntry entry = CACHE.get(key);
 
-            return (entry != null && !entry.isExpired(Main.config.getLong(Constants.TTL))) ? entry.getValue() : null;
+            return (entry != null && !entry.isExpired(Main.CONFIG.getLong(Constants.TTL))) ? entry.getValue() : null;
         }
         finally
         {
