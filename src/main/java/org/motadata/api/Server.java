@@ -21,10 +21,8 @@ public class Server extends AbstractVerticle
     private final String ORIGIN;
 
     @Override
-    public void start(Promise<Void> promise) throws Exception
+    public void start(Promise<Void> promise)
     {
-        super.start(promise);
-
         var server = vertx.createHttpServer();
 
         var router = Router.router(vertx);
