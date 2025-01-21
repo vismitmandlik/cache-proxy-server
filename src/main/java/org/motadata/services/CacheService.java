@@ -45,6 +45,8 @@ public class CacheService extends CacheEntry
         {
             CacheEntry entry = CACHE.get(key);
 
+            LOGGER.info(CACHE.toString());
+
             return entry != null && !entry.isExpired(Main.CONFIG.getLong(Constants.TTL));
         }
 
@@ -89,6 +91,38 @@ public class CacheService extends CacheEntry
         finally
         {
             LOCK.writeLock().unlock();
+        }
+    }
+
+    public static void clearCache()
+    {
+        LOCK.writeLock().lock();
+
+        try
+        {
+            CACHE.clear();
+
+            LOGGER.info("Cache cleared. Cache size is now: {}", 0);
+
+            LOGGER.info(CACHE.toString());
+        }
+        catch (Exception exception)
+        {
+            LOGGER.error(exception.getMessage());
+        }
+        finally
+        {
+            LOCK.writeLock().unlock();
+        }
+    }
+
+    public static class CacheClear
+    {
+
+        public static void main(String[] args)
+        {
+
+            clearCache();
         }
     }
 }

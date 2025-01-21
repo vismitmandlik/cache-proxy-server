@@ -28,19 +28,30 @@ public class ProxyHandler
                 .setDefaultPort(Main.CONFIG.getInteger(DEFAULT_WEB_CLIENT_PORT))
                 .setConnectTimeout(Main.CONFIG.getInteger(WEBCLIENT_CONNECTION_TIMEOUT)));
 
-        client.get(origin + context.request().uri()).send(result ->
+        Main.VERTX.executeBlocking(() ->
                 {
-                    if (result.succeeded())
+                    client.get(origin + context.request().uri()).send(result ->
                     {
-                        handleResponse(result.result(), context, cacheKey);
-                    }
-                    else
-                    {
-                        LOGGER.error("Error proxying request: {}", result.cause().getMessage());
+                        if (result.succeeded())
+                        {
+                            handleResponse(result.result(), context, cacheKey);
+                        }
+                        else
+                        {
+                            LOGGER.error("Error proxying request: {}", result.cause().getMessage());
 
-                        context.response().setStatusCode(Constants.SC_500).end("Error proxying request");
+                            context.response().setStatusCode(Constants.SC_500).end("Error proxying request");
+                        }
+                    });
+                    return null;
+                }, false,result ->
+                {
+                    if (result.failed())
+                    {
+                        LOGGER.error("Error executing blocking code: {}", result.cause().getMessage());
                     }
-                });
+                }
+        );
     }
 
     private static void handleResponse(HttpResponse<io.vertx.core.buffer.Buffer> response, RoutingContext context, String cacheKey)

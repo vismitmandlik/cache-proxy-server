@@ -1,6 +1,6 @@
 {
     "maxEntries": 100,
-    "ttl": 5000,
+    "ttl": 3600000,
     "defaultHost": "dummyjson.com",
     "webClientConnectionTimeout": 10000,
     "defaultWebClientPort": 80

@@ -14,11 +14,16 @@ import java.util.Objects;
 
 public class Server extends AbstractVerticle
 {
-    private static final Logger logger = LoggerFactory.getLogger(Server.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
     private final int PORT;
-
     private final String ORIGIN;
+
+    public Server(int PORT, String ORIGIN)
+    {
+        this.PORT = PORT;
+
+        this.ORIGIN = ORIGIN;
+    }
 
     @Override
     public void start(Promise<Void> promise)
@@ -33,18 +38,18 @@ public class Server extends AbstractVerticle
         {
             var cacheKey = context.request().uri();
 
-            logger.info("Cache key {}", cacheKey);
+            LOGGER.info("Cache key {}", cacheKey);
 
             if (CacheService.isCacheHit(cacheKey))
             {
-                logger.info("Cache HIT for request: {}", cacheKey);
+                LOGGER.info("Cache HIT for request: {}", cacheKey);
 
                 context.response().putHeader(Constants.X_CACHE, Constants.HIT).end(Objects.requireNonNull(CacheService.getCache(cacheKey)).encodePrettily());
             }
 
             else
             {
-                logger.info("Cache MISS for request: {}", cacheKey);
+                LOGGER.info("Cache MISS for request: {}", cacheKey);
 
                 ProxyHandler.handleRequest(context, vertx, ORIGIN, cacheKey);
             }
@@ -54,24 +59,17 @@ public class Server extends AbstractVerticle
         {
             if (response.succeeded())
             {
-                logger.info("Server started on port {}", PORT);
+                LOGGER.info("Server started on port {}", PORT);
 
                 promise.complete();
             }
 
             else
             {
-                logger.error("Failed to start server", response.cause());
+                LOGGER.error("Failed to start server", response.cause());
 
                 promise.fail(response.cause());
             }
         });
-    }
-
-    public Server(int PORT, String ORIGIN)
-    {
-        this.PORT = PORT;
-
-        this.ORIGIN = ORIGIN;
     }
 }
