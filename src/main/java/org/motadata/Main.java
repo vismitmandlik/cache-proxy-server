@@ -42,6 +42,8 @@ public class Main
 
             CONFIG = result.result();
 
+            LOGGER.info("Configuration loaded successfully: {}", CONFIG);
+
             if (args.length < 4)
             {
                 LOGGER.error("Usage: java -jar caching-proxy.jar --port <port> --origin <url>");

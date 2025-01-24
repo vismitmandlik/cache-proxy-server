@@ -45,7 +45,7 @@ public class CacheService extends CacheEntry
         {
             CacheEntry entry = CACHE.get(key);
 
-            LOGGER.info(CACHE.toString());
+            LOGGER.debug(CACHE.toString());
 
             return entry != null && !entry.isExpired(Main.CONFIG.getLong(Constants.TTL));
         }

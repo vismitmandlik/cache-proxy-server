@@ -1,6 +1,5 @@
 package org.motadata.services;
 
-import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.client.HttpResponse;
@@ -19,11 +18,22 @@ public class ProxyHandler
     public static final String WEBCLIENT_CONNECTION_TIMEOUT = "webClientConnectionTimeout";
     public static final String DEFAULT_HOST = "defaultHost";
 
-    public static void handleRequest(RoutingContext context, Vertx vertx, String origin, String cacheKey)
+    public static void handleRequest(RoutingContext context, String origin, String cacheKey)
     {
+        if (Main.CONFIG == null)
+        {
+            context.response().setStatusCode(Constants.SC_500).end("Configuration not loaded");
+
+            LOGGER.error("Configuration is null in ProxyHandler");
+
+            return;
+        }
+
+        LOGGER.info("Main.config : {}", Main.CONFIG);
+
         LOGGER.info("Sending proxy request to {}", origin + context.request().uri());
 
-        WebClient client = WebClient.create(vertx, new WebClientOptions()
+        WebClient client = WebClient.create(Main.VERTX, new WebClientOptions()
                 .setDefaultHost(Main.CONFIG.getString(DEFAULT_HOST))
                 .setDefaultPort(Main.CONFIG.getInteger(DEFAULT_WEB_CLIENT_PORT))
                 .setConnectTimeout(Main.CONFIG.getInteger(WEBCLIENT_CONNECTION_TIMEOUT)));

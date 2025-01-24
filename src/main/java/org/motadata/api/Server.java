@@ -4,6 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import org.motadata.Main;
 import org.motadata.constants.Constants;
 import org.motadata.services.CacheService;
 import org.motadata.services.ProxyHandler;
@@ -38,7 +39,7 @@ public class Server extends AbstractVerticle
         {
             var cacheKey = context.request().uri();
 
-            LOGGER.info("Cache key {}", cacheKey);
+            LOGGER.debug("Cache key {}", cacheKey);
 
             if (CacheService.isCacheHit(cacheKey))
             {
@@ -51,7 +52,7 @@ public class Server extends AbstractVerticle
             {
                 LOGGER.info("Cache MISS for request: {}", cacheKey);
 
-                ProxyHandler.handleRequest(context, vertx, ORIGIN, cacheKey);
+                ProxyHandler.handleRequest(context, ORIGIN, cacheKey);
             }
         });
 
