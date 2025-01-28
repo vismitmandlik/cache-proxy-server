@@ -1,10 +1,9 @@
 package org.motadata.services;
 
-import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.RoutingContext;
 import org.motadata.Main;
+import org.motadata.Utils.WebClientUtils;
 import org.motadata.constants.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +32,9 @@ public class ProxyHandler
 
         LOGGER.info("Sending proxy request to {}", origin + context.request().uri());
 
-        WebClient client = WebClient.create(Main.VERTX, new WebClientOptions()
-                .setDefaultHost(Main.CONFIG.getString(DEFAULT_HOST))
-                .setDefaultPort(Main.CONFIG.getInteger(DEFAULT_WEB_CLIENT_PORT))
-                .setConnectTimeout(Main.CONFIG.getInteger(WEBCLIENT_CONNECTION_TIMEOUT)));
-
         Main.VERTX.executeBlocking(() ->
                 {
-                    client.get(origin + context.request().uri()).send(result ->
+                    WebClientUtils.getCLIENT().get(origin + context.request().uri()).send(result ->
                     {
                         if (result.succeeded())
                         {
@@ -53,6 +47,7 @@ public class ProxyHandler
                             context.response().setStatusCode(Constants.SC_500).end("Error proxying request");
                         }
                     });
+
                     return null;
                 }, false,result ->
                 {

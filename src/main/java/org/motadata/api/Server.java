@@ -4,7 +4,6 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import org.motadata.Main;
 import org.motadata.constants.Constants;
 import org.motadata.services.CacheService;
 import org.motadata.services.ProxyHandler;

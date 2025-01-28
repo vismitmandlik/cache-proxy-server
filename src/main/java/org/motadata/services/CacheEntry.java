@@ -22,6 +22,6 @@ public class CacheEntry
 
     public boolean isExpired(long ttl)
     {
-        return (System.currentTimeMillis() - timestamp) >= ttl;
+        return (System.currentTimeMillis() - this.timestamp) >= ttl;
     }
 }

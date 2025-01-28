@@ -106,10 +106,12 @@ public class CacheService extends CacheEntry
 
             LOGGER.info(CACHE.toString());
         }
+
         catch (Exception exception)
         {
             LOGGER.error(exception.getMessage());
         }
+
         finally
         {
             LOCK.writeLock().unlock();

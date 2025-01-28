@@ -2,8 +2,11 @@ package org.motadata;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigStoreOptions;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import org.motadata.Utils.WebClientUtils;
 import org.motadata.api.Server;
 import org.motadata.constants.Constants;
 import org.slf4j.Logger;
@@ -25,6 +28,24 @@ public class Main
 
     public static void main(String[] args)
     {
+        // Call the asynchronous startup method
+        initialize(args).onComplete(result ->
+        {
+            if (result.succeeded())
+            {
+                LOGGER.info("Application started successfully.");
+            }
+            else
+            {
+                LOGGER.error("Application failed to start.", result.cause());
+            }
+        });
+    }
+
+    public static Future<Object> initialize(String[] args)
+    {
+        var startupPromise = Promise.promise();
+
         /* Set config.json path and load configuration from it */
         ConfigRetriever.create(VERTX, new io.vertx.config.ConfigRetrieverOptions()
                 .addStore(new ConfigStoreOptions()
@@ -37,6 +58,8 @@ public class Main
             {
                 LOGGER.error("Failed to load configuration: ", result.cause());
 
+                startupPromise.fail(result.cause());
+
                 return;
             }
 
@@ -47,6 +70,8 @@ public class Main
             if (args.length < 4)
             {
                 LOGGER.error("Usage: java -jar caching-proxy.jar --port <port> --origin <url>");
+
+                startupPromise.fail("Invalid arguments");
 
                 return;
             }
@@ -68,6 +93,8 @@ public class Main
                             {
                                 LOGGER.error("Invalid port number: {}", args[i + 1], exception);
 
+                                startupPromise.fail(exception);
+
                                 return;
                             }
                         }
@@ -75,10 +102,10 @@ public class Main
                         break;
 
                     case "--origin":
-                            if (i + 1 < args.length)
-                            {
-                                ORIGIN = args[i + 1];
-                            }
+                        if (i + 1 < args.length)
+                        {
+                            ORIGIN = args[i + 1];
+                        }
                         break;
 
                     default:
@@ -90,10 +117,14 @@ public class Main
             {
                 LOGGER.error("Origin URL is required. Usage: --origin <url>");
 
+                startupPromise.fail("Missing origin URL");
+
                 return;
             }
 
             LOGGER.info("Configured origin: {}", ORIGIN);
+
+            WebClientUtils.initialize();
 
             // Deploy the Server verticle
             VERTX.deployVerticle(new Server(PORT, ORIGIN), response ->
@@ -101,13 +132,20 @@ public class Main
                 if (response.succeeded())
                 {
                     LOGGER.info("Server verticle deployed successfully.");
+
+                    startupPromise.complete();
                 }
 
                 else
                 {
                     LOGGER.error("Failed to deploy server verticle.", response.cause());
+
+                    startupPromise.fail(response.cause());
                 }
             });
         });
+
+        return startupPromise.future();
+
     }
 }
